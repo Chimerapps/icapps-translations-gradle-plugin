@@ -70,7 +70,7 @@ bintray {
     key = System.getenv('BINTRAY_KEY')
     pkg {
         repo = 'maven'
-        name = 'icapps_translations-gradle-plugin'
+        name = 'icapps-translations-gradle-plugin'
         licenses = ['Apache-2.0']
         vcsUrl = 'https://github.com/Chimerapps/icapps-translations-gradle-plugin'
 
