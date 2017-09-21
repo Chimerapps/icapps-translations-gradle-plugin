@@ -38,6 +38,7 @@ class TranslationDownloader(private val translationsAPI: TranslationsAPI, privat
         val sourceRootProvider = configuration.sourceRootProvider
 
         val token = makeToken(configuration)
+        logger.debug("Using token: $token")
 
         val languages = translationsAPI.getLanguages(token).execute()
 

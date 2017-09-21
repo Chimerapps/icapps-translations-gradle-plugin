@@ -19,7 +19,6 @@ package com.chimerapps.gradle.icapps_translations
 
 import com.chimerapps.gradle.icapps_translations.icapps_translations.api.TranslationsAPI
 import com.chimerapps.gradle.icapps_translations.icapps_translations.api.model.MoshiFactory
-import com.chimerapps.gradle.icapps_translations.utils.ApiTokenAuthInterceptor
 import com.squareup.moshi.Moshi
 import okhttp3.OkHttpClient
 import org.gradle.api.Plugin
@@ -34,10 +33,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
  */
 open class DownloadTranslationsPlugin : Plugin<Project> {
 
-    val authInterceptor = ApiTokenAuthInterceptor()
-
     private val httpClient = OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
             .build()
     private val moshi = Moshi.Builder()
             .add(MoshiFactory())
@@ -56,8 +52,8 @@ open class DownloadTranslationsPlugin : Plugin<Project> {
         target.afterEvaluate {
             val tasks = arrayListOf<Task>()
             extension.configurations.forEach { configuration ->
-                target.logger.debug("Creating task update${configuration.name.capitalize()}Translations")
-                val task = target.tasks.create("update${configuration.name.capitalize()}Translations", UpdateTranslationsTask::class.java) {
+                target.logger.debug("Creating task update${configuration.name.capitalize()}iCappsTranslations")
+                val task = target.tasks.create("update${configuration.name.capitalize()}iCappsTranslations", UpdateTranslationsTask::class.java) {
                     it.configuration = configuration
                 }
                 task.group = "Translations"
@@ -65,16 +61,16 @@ open class DownloadTranslationsPlugin : Plugin<Project> {
             }
 
             if (extension.apiKey != null) {
-                target.logger.debug("Creating task updateDefaultTranslations")
-                val task = target.tasks.create("updateDefaultTranslations", UpdateTranslationsTask::class.java) {
+                target.logger.debug("Creating task updateDefaultiCappsTranslations")
+                val task = target.tasks.create("updateDefaultiCappsTranslations", UpdateTranslationsTask::class.java) {
                     it.configuration = extension
                 }
                 task.group = "Translations"
                 tasks.add(task)
             }
 
-            target.logger.debug("Creating task updateTranslations")
-            val allTask = target.tasks.create("updateTranslations") {
+            target.logger.debug("Creating task updateiCappsTranslations")
+            val allTask = target.tasks.create("updateiCappsTranslations") {
                 it.dependsOn.addAll(tasks)
             }
             allTask.group = "Translations"

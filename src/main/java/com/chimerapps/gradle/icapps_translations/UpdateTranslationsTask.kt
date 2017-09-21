@@ -19,7 +19,6 @@ package com.chimerapps.gradle.icapps_translations
 
 import com.chimerapps.gradle.icapps_translations.icapps_translations.TranslationDownloader
 import com.chimerapps.gradle.icapps_translations.icapps_translations.api.TranslationsAPI
-import com.chimerapps.gradle.icapps_translations.utils.ApiTokenAuthInterceptor
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -29,7 +28,6 @@ import org.gradle.api.tasks.TaskAction
  */
 open class UpdateTranslationsTask : DefaultTask() {
 
-    private val apiAuth: ApiTokenAuthInterceptor by lazy { project.plugins.findPlugin(DownloadTranslationsPlugin::class.java).authInterceptor }
     private val api: TranslationsAPI by lazy { project.plugins.findPlugin(DownloadTranslationsPlugin::class.java).translationsApi }
     lateinit var configuration: TranslationConfiguration
 
@@ -37,8 +35,8 @@ open class UpdateTranslationsTask : DefaultTask() {
     fun updateTranslations() {
         logger.debug("Update translations task running for config ${configuration.name}")
 
-        val apiKey = configuration.apiKey ?: throw IllegalArgumentException("No api key provided for icapps_translations")
-        apiAuth.apiToken = apiKey
+        if (configuration.apiKey == null)
+            throw IllegalArgumentException("No api key provided for icappsTranslations")
 
         TranslationDownloader(api, logger).download(configuration)
     }
