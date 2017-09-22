@@ -4,6 +4,20 @@ A simple plugin which downloads translations from icapps translation tool and sa
 
 Usage:
 ```
+//Place the following in your root gradle:
+buildscript {
+    repositories {
+        maven { url 'https://dl.bintray.com/nicolaverbeeck/maven/' }
+    }
+    dependencies{
+        classpath 'com.chimerapps.gradle:icapps-translations-plugin:1.0.0'
+    }
+}
+
+//In your build gradle file apply the plugin:
+apply plugin: 'com.chimerapps.gradle.icapps-translations'
+
+//Configure the plugin
 icappsTranslations {
     apiKey 'your-api-key-here'
     fileName 'strings.xml'       //Default
