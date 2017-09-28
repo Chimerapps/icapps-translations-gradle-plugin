@@ -36,6 +36,7 @@ class TranslationDownloader(private val translationsAPI: TranslationsAPI, privat
         val fileNameProvider = configuration.fileNameProvider
         val folderProvider = configuration.folderProvider
         val sourceRootProvider = configuration.sourceRootProvider
+        val languageFilter = configuration.languageFilter
 
         val token = makeToken(configuration)
         logger.debug("Using token: $token")
@@ -45,8 +46,9 @@ class TranslationDownloader(private val translationsAPI: TranslationsAPI, privat
         logger.debug("Get languages result: ${languages.message()} and code ${languages.code()}. Body: ${languages.body()}")
         val projectLanguages = languages.body() ?: throw IllegalArgumentException("Failed to load list of languages")
 
-        logger.debug("Got ${projectLanguages.size} language files")
-        projectLanguages.forEach {
+        logger.debug("Got ${projectLanguages.size} language files (before filter)")
+        projectLanguages.filter { languageFilter.call(it) }.forEach {
+
             val folderName = folderProvider.call(it.languageCode)
             val dir = File(sourceRootProvider.call(it.languageCode), folderName)
             dir.mkdirs()

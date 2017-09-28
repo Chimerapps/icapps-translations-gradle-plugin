@@ -1,9 +1,26 @@
 # icapps-translations android gradle plugin
 
+[ ![Download](https://api.bintray.com/packages/nicolaverbeeck/maven/icapps-translations-gradle-plugin/images/download.svg) ](https://bintray.com/nicolaverbeeck/maven/icapps-translations-gradle-plugin/_latestVersion)
+
 A simple plugin which downloads translations from icapps translation tool and saves the files to the project.
 
 Usage:
 ```
+//Add the following to your root build.gradle:
+buildscript {
+    repositories {
+        jcenter()
+    }
+    
+    dependencies {
+        classpath 'com.chimerapps.gradle:icapps-translations-plugin:<latest_version>'
+    }
+}
+
+//Add the following to your project build.gradle file
+apply plugin: 'com.chimerapps.gradle.icapps-translations'
+
+//Configure the plugin
 icappsTranslations {
     apiKey 'your-api-key-here'
     fileName 'strings.xml'       //Default
@@ -24,6 +41,10 @@ icappsTranslations {
     folderProvider { languageCode ->        //Function that provides the folder based on the (raw) language code
         def renamed = languageRename(languageCode)
         return "values-"+(renamed == null) ? code : renamed)
+    }
+    
+    languageFilter { language ->            //Function that filters languages. The language passed is the raw language code
+        return true
     }
 
     configuration("test") {

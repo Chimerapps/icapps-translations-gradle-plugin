@@ -54,9 +54,14 @@ open class TranslationConfiguration(open var name: String = "default") {
             return "values-${languageRename.call(code) ?: code}"
         }
     }
+    open var languageFilter : Closure<Boolean> = object : Closure<Boolean>(null){
+        override fun call(vararg args: Any?): Boolean {
+            return true
+        }
+    }
 
     override fun toString(): String {
-        return "TranslationConfiguration(name='$name', apiKey=$apiKey, fileName='$fileName', sourceRoot='$sourceRoot', fileType='$fileType', sourceRootProvider=$sourceRootProvider, languageRename=$languageRename, fileNameProvider=$fileNameProvider, folderProvider=$folderProvider)"
+        return "TranslationConfiguration(name='$name', apiKey=$apiKey, fileName='$fileName', sourceRoot='$sourceRoot', fileType='$fileType', sourceRootProvider=$sourceRootProvider, languageRename=$languageRename, fileNameProvider=$fileNameProvider, folderProvider=$folderProvider, languageFilter=$languageFilter)"
     }
 
 }
