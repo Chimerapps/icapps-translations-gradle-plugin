@@ -59,10 +59,10 @@ icappsTranslations {
 
 You can then call the tasks from the command line:
 ```
-./gradlew updateTranslations            //Runs all translations tasks
-./gradlew updateDefaultTranslations     //Runs the translation task defined by the outer scope
-./gradlew updateTestTranslations        //Runs the translation task defined by the 'test' configuration
-./gradlew updateReleaseTranslations     //Runs the translation task defined by the 'release' configuration
+./gradlew updateiCappsTranslations            //Runs all translations tasks
+./gradlew updateDefaultiCAppsTranslations     //Runs the translation task defined by the outer scope
+./gradlew updateTestiCappsTranslations        //Runs the translation task defined by the 'test' configuration
+./gradlew updateReleaseiCappsTranslations     //Runs the translation task defined by the 'release' configuration
 ```
 
 **NOTE:** If the api key is missing from the outer scope, the 'default' configuration is not included as task

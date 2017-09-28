@@ -47,7 +47,7 @@ class TranslationDownloader(private val translationsAPI: TranslationsAPI, privat
         val projectLanguages = languages.body() ?: throw IllegalArgumentException("Failed to load list of languages")
 
         logger.debug("Got ${projectLanguages.size} language files (before filter)")
-        projectLanguages.filter { languageFilter.call(it) }.forEach {
+        projectLanguages.filter { languageFilter.call(it.languageCode) }.forEach {
 
             val folderName = folderProvider.call(it.languageCode)
             val dir = File(sourceRootProvider.call(it.languageCode), folderName)
