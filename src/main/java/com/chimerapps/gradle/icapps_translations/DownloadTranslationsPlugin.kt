@@ -50,6 +50,11 @@ open class DownloadTranslationsPlugin : Plugin<Project> {
         val extension = target.extensions.create("icappsTranslations", DownloadTranslationsExtension::class.java)
 
         target.afterEvaluate {
+            if (extension.configurations.isEmpty() && extension.apiKey == null) {
+                target.logger.debug("No configurations or api key defined, not adding tasks")
+                return@afterEvaluate
+            }
+
             val tasks = arrayListOf<Task>()
             extension.configurations.forEach { configuration ->
                 target.logger.debug("Creating task update${configuration.name.capitalize()}iCappsTranslations")
