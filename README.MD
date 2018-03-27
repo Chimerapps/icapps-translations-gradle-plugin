@@ -48,11 +48,11 @@ icappsTranslations {
     }
 
     configuration("test") {
-        apiKey 'read-only-key2'     //Uses the default fileName and sourceRoot. Not inherited
+        apiKey 'read-only-key2'     //Uses the default fileName and sourceRoot. Not inherited. Specifying lambdas for sub-configurations must use '='
     }
 
     configuration("release") {
-        apiKey 'read-only-key3'     //Uses the default fileName and sourceRoot. Not inherited
+        apiKey 'read-only-key3'     //Uses the default fileName and sourceRoot. Not inherited. Specifying lambdas for sub-configurations must use '='
     }
 }
 ```

@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.2.10'
+    ext.kotlin_version = '1.2.31'
 
     repositories {
         mavenCentral()
@@ -13,7 +13,7 @@ plugins {
     id "com.jfrog.bintray" version "1.7.3"
 }
 
-def artifactVersion = '1.0.3'
+def artifactVersion = '1.0.4'
 def artifactGroup = 'com.chimerapps.gradle'
 group "$artifactGroup"
 version "$artifactVersion"
