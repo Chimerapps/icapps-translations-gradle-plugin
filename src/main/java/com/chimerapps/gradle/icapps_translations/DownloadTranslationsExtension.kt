@@ -30,6 +30,7 @@ open class TranslationConfiguration(open var name: String = "default") {
     open var apiKey: String? = null
     open var fileName: String = "strings.xml"
     open var sourceRoot: String = "src/main/res"
+    open var defaultLanguage: String? = null
     open var fileType: String = "xml"
 
     open var sourceRootProvider: Closure<String> = object : Closure<String>(null) {
@@ -51,6 +52,8 @@ open class TranslationConfiguration(open var name: String = "default") {
     open var folderProvider: Closure<String> = object : Closure<String>(null) {
         override fun call(vararg args: Any?): String {
             val code = (args[0] as String)
+            if (code == defaultLanguage)
+                return "values"
             return "values-${languageRename.call(code) ?: code}"
         }
     }
