@@ -24,6 +24,7 @@ apply plugin: 'com.chimerapps.gradle.icapps-translations'
 icappsTranslations {
     apiKey 'your-api-key-here'
     fileName 'strings.xml'       //Default
+    defaultLanguage = ""         //Default, this wil place all the languages in values-{language}, you can select one languge to store the translations in values/strings.xml. This is handy when you only use one translation.
     sourceRoot 'src/main/res'    //Default, will replace occurences of {language} with the (transformed) language
     
     languageRename { languageCode ->                //Default is identity transformation (return languageCode)
