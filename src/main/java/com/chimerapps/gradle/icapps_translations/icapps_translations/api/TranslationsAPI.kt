@@ -31,7 +31,7 @@ import retrofit2.http.Path
 interface TranslationsAPI {
 
     companion object {
-        const val API_BASE = "http://translations.icapps.com/api/"
+        const val API_BASE = "https://translations.icapps.com/api/"
     }
 
     @GET("languages.json")
