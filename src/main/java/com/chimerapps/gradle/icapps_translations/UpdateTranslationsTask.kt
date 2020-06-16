@@ -28,7 +28,7 @@ import org.gradle.api.tasks.TaskAction
  */
 open class UpdateTranslationsTask : DefaultTask() {
 
-    private val api: TranslationsAPI by lazy { project.plugins.findPlugin(DownloadTranslationsPlugin::class.java).translationsApi }
+    private val api: TranslationsAPI by lazy { project.plugins.findPlugin(DownloadTranslationsPlugin::class.java)!!.translationsApi }
     lateinit var configuration: TranslationConfiguration
 
     @TaskAction

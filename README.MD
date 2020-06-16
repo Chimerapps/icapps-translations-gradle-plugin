@@ -48,6 +48,10 @@ icappsTranslations {
         return true
     }
 
+    keyTransformer { key ->                 //Function that allows you to transform the keys before writing. Currently only works with xml file type. Return null to keep unchanged
+        return key                 
+    }
+
     configuration("test") {
         apiKey 'read-only-key2'     //Uses the default fileName and sourceRoot. Not inherited. Specifying lambdas for sub-configurations must use '='
     }
@@ -60,10 +64,10 @@ icappsTranslations {
 
 You can then call the tasks from the command line:
 ```
-./gradlew updateiCappsTranslations            //Runs all translations tasks
-./gradlew updateDefaultiCAppsTranslations     //Runs the translation task defined by the outer scope
-./gradlew updateTestiCappsTranslations        //Runs the translation task defined by the 'test' configuration
-./gradlew updateReleaseiCappsTranslations     //Runs the translation task defined by the 'release' configuration
+./gradlew updateicappsTranslations            //Runs all translations tasks
+./gradlew updateDefaulticappsTranslations     //Runs the translation task defined by the outer scope
+./gradlew updateTesticappsTranslations        //Runs the translation task defined by the 'test' configuration
+./gradlew updateReleaseicappsTranslations     //Runs the translation task defined by the 'release' configuration
 ```
 
 **NOTE:** If the api key is missing from the outer scope, the 'default' configuration is not included as task

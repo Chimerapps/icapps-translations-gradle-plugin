@@ -39,7 +39,7 @@ open class DownloadTranslationsPlugin : Plugin<Project> {
             .add(MoshiFactory())
             .build()
 
-    val translationsApi = Retrofit.Builder()
+    val translationsApi: TranslationsAPI = Retrofit.Builder()
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .client(httpClient)
             .baseUrl(TranslationsAPI.API_BASE)
@@ -57,8 +57,8 @@ open class DownloadTranslationsPlugin : Plugin<Project> {
 
             val tasks = arrayListOf<Task>()
             extension.configurations.forEach { configuration ->
-                target.logger.debug("Creating task update${configuration.name.capitalize()}iCappsTranslations")
-                val task = target.tasks.create("update${configuration.name.capitalize()}iCappsTranslations", UpdateTranslationsTask::class.java) {
+                target.logger.debug("Creating task update${configuration.name.capitalize()}icappsTranslations")
+                val task = target.tasks.create("update${configuration.name.capitalize()}icappsTranslations", UpdateTranslationsTask::class.java) {
                     it.configuration = configuration
                 }
                 task.group = "Translations"
@@ -66,16 +66,19 @@ open class DownloadTranslationsPlugin : Plugin<Project> {
             }
 
             if (extension.apiKey != null) {
-                target.logger.debug("Creating task updateDefaultiCappsTranslations")
-                val task = target.tasks.create("updateDefaultiCappsTranslations", UpdateTranslationsTask::class.java) {
+                target.logger.debug("Creating task updateDefaulticappsTranslations")
+                val task = target.tasks.create("updateDefaulticappsTranslations", UpdateTranslationsTask::class.java) {
                     it.configuration = extension
                 }
                 task.group = "Translations"
                 tasks.add(task)
             }
+            if (extension.keyTransformer != null && extension.fileType != "xml") {
+                target.logger.error("Key transformer is currently only supported for xml files")
+            }
 
-            target.logger.debug("Creating task updateiCappsTranslations")
-            val allTask = target.tasks.create("updateiCappsTranslations") {
+            target.logger.debug("Creating task updateicappsTranslations")
+            val allTask = target.tasks.create("updateicappsTranslations") {
                 it.dependsOn.addAll(tasks)
             }
             allTask.group = "Translations"

@@ -62,9 +62,10 @@ open class TranslationConfiguration(open var name: String = "default") {
             return true
         }
     }
+    open var keyTransformer: Closure<CharSequence>? = null
 
     override fun toString(): String {
-        return "TranslationConfiguration(name='$name', apiKey=$apiKey, fileName='$fileName', sourceRoot='$sourceRoot', fileType='$fileType', sourceRootProvider=$sourceRootProvider, languageRename=$languageRename, fileNameProvider=$fileNameProvider, folderProvider=$folderProvider, languageFilter=$languageFilter)"
+        return "TranslationConfiguration(name='$name', apiKey=$apiKey, fileName='$fileName', sourceRoot='$sourceRoot', defaultLanguage=$defaultLanguage, fileType='$fileType', sourceRootProvider=$sourceRootProvider, languageRename=$languageRename, fileNameProvider=$fileNameProvider, folderProvider=$folderProvider, languageFilter=$languageFilter, keyTransformer=$keyTransformer)"
     }
 
 }

@@ -19,9 +19,21 @@ package com.chimerapps.gradle.icapps_translations.icapps_translations
 
 import com.chimerapps.gradle.icapps_translations.TranslationConfiguration
 import com.chimerapps.gradle.icapps_translations.icapps_translations.api.TranslationsAPI
+import groovy.lang.Closure
+import groovy.xml.DOMBuilder
 import org.gradle.api.logging.Logger
+import org.w3c.dom.Node
+import org.w3c.dom.NodeList
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.io.InputStream
+import java.io.Reader
+import javax.xml.transform.OutputKeys
+import javax.xml.transform.TransformerFactory
+import javax.xml.transform.dom.DOMSource
+import javax.xml.transform.stream.StreamResult
 
 /**
  * @author Nicola Verbeeck
@@ -37,6 +49,7 @@ class TranslationDownloader(private val translationsAPI: TranslationsAPI, privat
         val folderProvider = configuration.folderProvider
         val sourceRootProvider = configuration.sourceRootProvider
         val languageFilter = configuration.languageFilter
+        val keyTransformer = configuration.keyTransformer
 
         val token = makeToken(configuration)
         logger.debug("Using token: $token")
@@ -64,15 +77,57 @@ class TranslationDownloader(private val translationsAPI: TranslationsAPI, privat
                 return@forEach
             }
 
+            val dataStream = if (keyTransformer != null && configuration.fileType == "xml") {
+                transformStream(body.charStream(), keyTransformer)
+            } else {
+                body.byteStream()
+            }
+
             FileOutputStream(targetFile).apply {
-                val size = body.byteStream().copyTo(this)
+                val size = dataStream.use { stream -> stream.copyTo(this) }
                 logger.debug("Translation file for ${it.languageCode} saved, $size bytes")
             }
+            try {
+                body.close()
+            } catch (e: Throwable) {
+            }
         }
+    }
+
+    private fun transformStream(data: Reader, keyTransformer: Closure<CharSequence>): InputStream {
+        val text = data.use { it.readText() }
+
+        val builder = DOMBuilder.newInstance()
+        val document = builder.parseText(text)
+
+        val resources = document.documentElement
+        resources.childNodes.forEach {
+            if (it.nodeType == Node.ELEMENT_NODE) {
+                val nameNode = it.attributes.getNamedItem("name")
+                if (nameNode != null) {
+                    val oldKey = nameNode.textContent
+                    val transformed = keyTransformer.call(oldKey)
+                    val newKey = transformed?.toString() ?: oldKey
+                    nameNode.nodeValue = newKey
+                }
+            }
+        }
+        val targetStream = ByteArrayOutputStream()
+        val result = StreamResult(targetStream)
+        val transformer = TransformerFactory.newInstance().newTransformer()
+        transformer.transform(DOMSource(document), result)
+
+        return ByteArrayInputStream(targetStream.toByteArray())
     }
 
     private fun makeToken(configuration: TranslationConfiguration): String {
         return "Token token=${configuration.apiKey}"
     }
 
+}
+
+private inline fun NodeList.forEach(block: (Node) -> Unit) {
+    for (i in 0 until this.length) {
+        block(item(i))
+    }
 }
