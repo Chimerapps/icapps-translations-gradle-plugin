@@ -10,7 +10,6 @@ buildscript {
     }
 }
 plugins {
-    id "com.jfrog.bintray" version "1.8.4"
 	id "com.github.ben-manes.versions" version "0.20.0"
 }
 
@@ -24,6 +23,7 @@ apply plugin: 'kotlin'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'maven-publish'
+apply plugin: 'signing'
 apply plugin: 'idea'
 
 sourceCompatibility = 1.8
@@ -58,62 +58,4 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
-bintray {
-    user = System.getenv('BINTRAY_USER')
-    key = System.getenv('BINTRAY_KEY')
-    pkg {
-        repo = 'maven'
-        name = 'icapps-translations-gradle-plugin'
-        licenses = ['Apache-2.0']
-        vcsUrl = 'https://github.com/Chimerapps/icapps-translations-gradle-plugin'
-
-        version {
-            name = "$artifactVersion"
-            desc = "Gradle plugin for icapps_translations"
-            released = new Date()
-        }
-    }
-    publications = ['maven']
-}
-
-def pomConfig = {
-    licenses {
-        license {
-            name "The Apache Software License, Version 2.0"
-            url "http://www.apache.org/licenses/LICENSE-2.0.txt"
-            distribution "repo"
-        }
-    }
-    developers {
-        developer {
-            name "Nicola Verbeeck"
-            email "nicola@chimerapps.com"
-            organization "Chimerapps"
-        }
-    }
-}
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            groupId "$artifactGroup"
-            artifactId 'icapps-translations-plugin'
-            version "$artifactVersion"
-
-            from components.java
-
-            artifact sourceJar {
-                classifier "sources"
-            }
-            artifact javadocJar
-
-            pom.withXml {
-                def root = asNode()
-                root.appendNode('description', 'Gradle plugin that allows translations to be downloaded from icapps translations')
-                root.appendNode('name', 'icapps-translations-plugin')
-                root.appendNode('url', 'https://github.com/Chimerapps/icapps-translations-gradle-plugin')
-                root.children().last() + pomConfig
-            }
-        }
-    }
-}
+apply from: "${rootProject.projectDir}/scripts/publish-mavencentral.gradle"

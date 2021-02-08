@@ -13,6 +13,8 @@
 .idea/**/tasks.xml
 .idea/dictionaries
 
+signing.properties
+
 # Sensitive or high-churn files:
 .idea/**/dataSources/
 .idea/**/dataSources.ids
