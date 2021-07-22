@@ -20,6 +20,7 @@ package com.chimerapps.gradle.icapps_translations
 import com.chimerapps.gradle.icapps_translations.icapps_translations.TranslationDownloader
 import com.chimerapps.gradle.icapps_translations.icapps_translations.api.TranslationsAPI
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 
 /**
@@ -29,6 +30,10 @@ import org.gradle.api.tasks.TaskAction
 open class UpdateTranslationsTask : DefaultTask() {
 
     private val api: TranslationsAPI by lazy { project.plugins.findPlugin(DownloadTranslationsPlugin::class.java)!!.translationsApi }
+
+    @field:Internal
+    @get:Internal
+    @set:Internal
     lateinit var configuration: TranslationConfiguration
 
     @TaskAction
