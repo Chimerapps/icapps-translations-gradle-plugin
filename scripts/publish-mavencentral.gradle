@@ -1,4 +1,4 @@
-def artifactVersion = '1.2.0'
+def artifactVersion = '1.2.1'
 def artifactGroup = 'com.chimerapps.gradle'
 def artifactName = 'icapps-translations-plugin'
 group "$artifactGroup"
