@@ -31,9 +31,7 @@ open class UpdateTranslationsTask : DefaultTask() {
 
     private val api: TranslationsAPI by lazy { project.plugins.findPlugin(DownloadTranslationsPlugin::class.java)!!.translationsApi }
 
-    @field:Internal
     @get:Internal
-    @set:Internal
     lateinit var configuration: TranslationConfiguration
 
     @TaskAction
