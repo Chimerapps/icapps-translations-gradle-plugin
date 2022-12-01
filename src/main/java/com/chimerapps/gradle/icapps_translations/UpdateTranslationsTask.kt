@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - Chimerapps BVBA
+ * Copyright 2017-2022 - Chimerapps BV
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,18 +18,21 @@
 package com.chimerapps.gradle.icapps_translations
 
 import com.chimerapps.gradle.icapps_translations.icapps_translations.TranslationDownloader
+import com.chimerapps.gradle.icapps_translations.icapps_translations.api.LegacyTranslationsAPI
+import com.chimerapps.gradle.icapps_translations.icapps_translations.api.NewTranslationsAPI
 import com.chimerapps.gradle.icapps_translations.icapps_translations.api.TranslationsAPI
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
+import retrofit2.Retrofit
 
 /**
  * @author Nicola Verbeeck
- * @date 04/09/2017.
+ * @date 04/09/2017-2022.
  */
 open class UpdateTranslationsTask : DefaultTask() {
 
-    private val api: TranslationsAPI by lazy { project.plugins.findPlugin(DownloadTranslationsPlugin::class.java)!!.translationsApi }
+    private val apiBuilder: Retrofit.Builder by lazy { project.plugins.findPlugin(DownloadTranslationsPlugin::class.java)!!.retrofitBuilder }
 
     @get:Internal
     lateinit var configuration: TranslationConfiguration
@@ -38,10 +41,26 @@ open class UpdateTranslationsTask : DefaultTask() {
     fun updateTranslations() {
         logger.debug("Update translations task running for config ${configuration.name}")
 
-        if (configuration.apiKey == null)
-            throw IllegalArgumentException("No api key provided for icappsTranslations")
+        if (configuration.apiKey == null && (configuration.projectKey == null && configuration.projectToken == null))
+            throw IllegalArgumentException("No api key or project-key, project token pair provided for icappsTranslations")
 
-        TranslationDownloader(api, logger).download(configuration)
+        if (configuration.apiKey != null && (configuration.projectKey != null || configuration.projectToken != null)) {
+            throw IllegalArgumentException("apiKey cannot be provided if projectKey or projectToken is set")
+        }
+
+        TranslationDownloader(createApi(configuration), logger).download(configuration)
+    }
+
+    private fun createApi(configuration: TranslationConfiguration): TranslationsAPI {
+        if (configuration.apiKey != null) {
+            return apiBuilder
+                .baseUrl(LegacyTranslationsAPI.API_BASE)
+                .build()
+                .create(LegacyTranslationsAPI::class.java)
+        }
+        return apiBuilder.baseUrl(NewTranslationsAPI.API_BASE)
+            .build()
+            .create(NewTranslationsAPI::class.java)
     }
 
 }

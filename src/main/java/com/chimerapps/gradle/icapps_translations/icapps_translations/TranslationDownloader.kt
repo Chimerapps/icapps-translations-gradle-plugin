@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - Chimerapps BVBA
+ * Copyright 2017-2022 - Chimerapps BV
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import com.chimerapps.gradle.icapps_translations.TranslationConfiguration
 import com.chimerapps.gradle.icapps_translations.icapps_translations.api.TranslationsAPI
 import groovy.lang.Closure
 import groovy.xml.DOMBuilder
+import okhttp3.internal.closeQuietly
 import org.gradle.api.logging.Logger
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
@@ -30,14 +31,13 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.Reader
-import javax.xml.transform.OutputKeys
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 
 /**
  * @author Nicola Verbeeck
- * @date 04/09/2017.
+ * @date 04/09/2017-2022.
  */
 class TranslationDownloader(private val translationsAPI: TranslationsAPI, private val logger: Logger) {
 
@@ -54,26 +54,26 @@ class TranslationDownloader(private val translationsAPI: TranslationsAPI, privat
         val token = makeToken(configuration)
         logger.debug("Using token: $token")
 
-        val languages = translationsAPI.getLanguages(token).execute()
+        val languages = translationsAPI.getLanguages(token, configuration.projectKey).execute()
 
         logger.debug("Get languages result: ${languages.message()} and code ${languages.code()}. Body: ${languages.body()}")
         val projectLanguages = languages.body() ?: throw IllegalArgumentException("Failed to load list of languages")
 
         logger.debug("Got ${projectLanguages.size} language files (before filter)")
-        projectLanguages.filter { languageFilter.call(it.languageCode) }.forEach {
+        projectLanguages.filter { languageFilter.call(it.languageCode ?: it.alternativeLanguageCode) }.forEach {
 
-            val folderName = folderProvider.call(it.languageCode)
-            val dir = File(sourceRootProvider.call(it.languageCode), folderName)
+            val folderName = folderProvider.call(it.languageCode ?: it.alternativeLanguageCode)
+            val dir = File(sourceRootProvider.call(it.languageCode ?: it.alternativeLanguageCode), folderName)
             dir.mkdirs()
-            val targetFile = File(dir, fileNameProvider.call(it.languageCode))
+            val targetFile = File(dir, fileNameProvider.call(it.languageCode ?: it.alternativeLanguageCode))
 
-            logger.debug("Downloading file for ${it.languageCode} to ${targetFile.absolutePath}")
+            logger.debug("Downloading file for ${it.languageCode ?: it.alternativeLanguageCode} to ${targetFile.absolutePath}")
 
-            val translationFile = translationsAPI.getTranslation(token, it.languageCode, configuration.fileType).execute()
+            val translationFile = translationsAPI.getTranslation(token, it.languageCode ?: it.alternativeLanguageCode!!, makeFileType(configuration), configuration.projectKey).execute()
 
             val body = translationFile.body()
             if (body == null) {
-                logger.warn("Failed to download file for locale ${it.languageCode}: ${translationFile.message()}")
+                logger.warn("Failed to download file for locale ${it.languageCode ?: it.alternativeLanguageCode}: ${translationFile.message()}")
                 return@forEach
             }
 
@@ -85,12 +85,9 @@ class TranslationDownloader(private val translationsAPI: TranslationsAPI, privat
 
             FileOutputStream(targetFile).apply {
                 val size = dataStream.use { stream -> stream.copyTo(this) }
-                logger.debug("Translation file for ${it.languageCode} saved, $size bytes")
+                logger.debug("Translation file for ${it.languageCode ?: it.alternativeLanguageCode} saved, $size bytes")
             }
-            try {
-                body.close()
-            } catch (e: Throwable) {
-            }
+            body.closeQuietly()
         }
     }
 
@@ -121,7 +118,21 @@ class TranslationDownloader(private val translationsAPI: TranslationsAPI, privat
     }
 
     private fun makeToken(configuration: TranslationConfiguration): String {
-        return "Token token=${configuration.apiKey}"
+        if (configuration.apiKey != null)
+            return "Token token=${configuration.apiKey}"
+        return "Bearer ${configuration.projectToken}"
+    }
+
+    private fun makeFileType(configuration: TranslationConfiguration): String {
+        if (configuration.apiKey != null)
+            return configuration.fileType
+
+        return when (configuration.fileType) {
+            "xml" -> "application/android"
+            "json" -> "application/json"
+            "strings" -> "application/strings"
+            else -> throw IllegalArgumentException("Unknown file type: ${configuration.fileType}. Supported values: xml, json, strings")
+        }
     }
 
 }

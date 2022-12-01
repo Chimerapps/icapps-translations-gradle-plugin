@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - Chimerapps BVBA
+ * Copyright 2017-2022 - Chimerapps BV
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,8 @@
 
 package com.chimerapps.gradle.icapps_translations
 
-import com.chimerapps.gradle.icapps_translations.icapps_translations.api.TranslationsAPI
-import com.chimerapps.gradle.icapps_translations.icapps_translations.api.model.MoshiFactory
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.OkHttpClient
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -29,29 +28,26 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 
 /**
  * @author Nicola Verbeeck
- * @date 04/09/2017.
+ * @date 04/09/2017-2022.
  */
 open class DownloadTranslationsPlugin : Plugin<Project> {
 
     private val httpClient = OkHttpClient.Builder()
-            .build()
+        .build()
     private val moshi = Moshi.Builder()
-            .add(MoshiFactory())
-            .build()
+        .add(KotlinJsonAdapterFactory())
+        .build()
 
-    val translationsApi: TranslationsAPI = Retrofit.Builder()
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .client(httpClient)
-            .baseUrl(TranslationsAPI.API_BASE)
-            .build()
-            .create(TranslationsAPI::class.java)
+    val retrofitBuilder = Retrofit.Builder()
+        .addConverterFactory(MoshiConverterFactory.create(moshi))
+        .client(httpClient)
 
     override fun apply(target: Project) {
         val extension = target.extensions.create("icappsTranslations", DownloadTranslationsExtension::class.java)
 
         target.afterEvaluate {
-            if (extension.configurations.isEmpty() && extension.apiKey == null) {
-                target.logger.debug("No configurations or api key defined, not adding tasks")
+            if (extension.configurations.isEmpty() && extension.apiKey == null && extension.projectKey == null) {
+                target.logger.debug("No configurations or api/project key defined, not adding tasks")
                 return@afterEvaluate
             }
 
@@ -65,7 +61,7 @@ open class DownloadTranslationsPlugin : Plugin<Project> {
                 tasks.add(task)
             }
 
-            if (extension.apiKey != null) {
+            if (extension.apiKey != null || (extension.projectKey != null && extension.projectToken != null)) {
                 target.logger.debug("Creating task updateDefaulticappsTranslations")
                 val task = target.tasks.create("updateDefaulticappsTranslations", UpdateTranslationsTask::class.java) {
                     it.configuration = extension

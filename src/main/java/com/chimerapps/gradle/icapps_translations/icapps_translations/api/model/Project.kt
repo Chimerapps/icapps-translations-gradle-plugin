@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - Chimerapps BVBA
+ * Copyright 2017-2022 - Chimerapps BV
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,14 @@
 
 package com.chimerapps.gradle.icapps_translations.icapps_translations.api.model
 
-import com.chimerapps.moshigenerator.GenerateMoshi
-import com.chimerapps.moshigenerator.GenerateMoshiFactory
 import com.squareup.moshi.Json
 
 /**
  * @author Nicola Verbeeck
- * @date 04/09/2017.
+ * @date 04/09/2017-2022.
  */
 
-@GenerateMoshi
 data class Language(
-        @Json(name = "short_name") val languageCode: String
+    @Json(name = "short_name") val languageCode: String?,
+    @Json(name = "abbreviation") val alternativeLanguageCode: String?,
 )
-
-
-@GenerateMoshiFactory(Language::class)
-interface ModelFactoryHolder

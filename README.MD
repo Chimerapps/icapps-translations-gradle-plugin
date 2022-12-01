@@ -9,7 +9,7 @@ Usage:
 //Add the following to your root build.gradle:
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
     }
     
     dependencies {
@@ -22,10 +22,13 @@ apply plugin: 'com.chimerapps.gradle.icapps-translations'
 
 //Configure the plugin
 icappsTranslations {
-    apiKey 'your-api-key-here'
-    fileName 'strings.xml'       //Default
-    defaultLanguage = ""         //Default, this wil place all the languages in values-{language}, you can select one languge to store the translations in values/strings.xml. This is handy when you only use one translation.
-    sourceRoot 'src/main/res'    //Default, will replace occurences of {language} with the (transformed) language
+    apiKey 'your-api-key-here'              //For legacy translation tool translations
+    projectKey 'your-project-key-here'      //For new translation tool translations
+    projectToken 'your-project-token-here'  //For new translation tool translations
+    fileName 'strings.xml'                  //Default
+    defaultLanguage = ""                    //Default, this wil place all the languages in values-{language}, you can select one languge to store the translations in values/strings.xml. This is handy when you only use one translation.
+    sourceRoot 'src/main/res'               //Default, will replace occurences of {language} with the (transformed) language
+    fileType 'xml'                          //Default, can be xml, json or strings (in new translation tool, probably xml and json in legacy)
     
     languageRename { languageCode ->                //Default is identity transformation (return languageCode)
         return languageCode.replace('_','-r')
@@ -54,10 +57,12 @@ icappsTranslations {
 
     configuration("test") {
         apiKey 'read-only-key2'     //Uses the default fileName and sourceRoot. Not inherited. Specifying lambdas for sub-configurations must use '='
+        // Or projectKey and projectToken
     }
 
     configuration("release") {
         apiKey 'read-only-key3'     //Uses the default fileName and sourceRoot. Not inherited. Specifying lambdas for sub-configurations must use '='
+        // Or projectKey and projectToken
     }
 }
 ```
@@ -70,4 +75,4 @@ You can then call the tasks from the command line:
 ./gradlew updateReleaseicappsTranslations     //Runs the translation task defined by the 'release' configuration
 ```
 
-**NOTE:** If the api key is missing from the outer scope, the 'default' configuration is not included as task
+**NOTE:** If the api key or project key/token is missing from the outer scope, the 'default' configuration is not included as task

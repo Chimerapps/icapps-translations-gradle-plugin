@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - Chimerapps BVBA
+ * Copyright 2017-2022 - Chimerapps BV
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,25 +22,52 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Headers
 import retrofit2.http.Path
 
 /**
  * @author Nicola Verbeeck
- * @date 04/09/2017.
+ * @date 04/09/2017-2022.
  */
 interface TranslationsAPI {
 
+    fun getLanguages(authToken: String, projectKey: String?): Call<List<Language>>
+
+    fun getTranslation(authToken: String, language: String, type: String, projectKey: String?): Call<ResponseBody>
+
+}
+
+interface LegacyTranslationsAPI : TranslationsAPI {
     companion object {
         const val API_BASE = "https://translations.icapps.com/api/"
     }
 
     @GET("languages.json")
-    fun getLanguages(@Header("Authorization") authToken: String): Call<List<Language>>
+    override fun getLanguages(@Header("Authorization") authToken: String, projectKey: String?): Call<List<Language>>
 
     @GET("translations/{language}.{type}")
-    fun getTranslation(
-            @Header("Authorization") authToken: String,
-            @Path("language") language: String,
-            @Path("type") type: String): Call<ResponseBody>
+    override fun getTranslation(
+        @Header("Authorization") authToken: String,
+        @Path("language") language: String,
+        @Path("type") type: String,
+        projectKey: String?
+    ): Call<ResponseBody>
+}
+
+interface NewTranslationsAPI : TranslationsAPI {
+    companion object {
+        const val API_BASE = "https://translate.icapps.com/api/project/"
+    }
+
+    @GET("{projectKey}/languages")
+    override fun getLanguages(@Header("Authorization") authToken: String, @Path("projectKey") projectKey: String?): Call<List<Language>>
+
+    @GET("{projectKey}/translations/{language}")
+    override fun getTranslation(
+        @Header("Authorization") authToken: String,
+        @Path("language") language: String,
+        @Header("accept") type: String,
+        @Path("projectKey") projectKey: String?
+    ): Call<ResponseBody>
 
 }

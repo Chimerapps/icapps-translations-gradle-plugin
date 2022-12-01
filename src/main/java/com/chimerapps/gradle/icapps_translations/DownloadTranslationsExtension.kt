@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - Chimerapps BVBA
+ * Copyright 2017-2022 - Chimerapps BV
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,13 @@ import org.gradle.api.Action
 
 /**
  * @author Nicola Verbeeck
- * @date 04/09/2017.
+ * @date 04/09/2017-2022.
  */
 open class TranslationConfiguration(open var name: String = "default") {
 
     open var apiKey: String? = null
+    open var projectKey: String? = null
+    open var projectToken: String? = null
     open var fileName: String = "strings.xml"
     open var sourceRoot: String = "src/main/res"
     open var defaultLanguage: String? = null
@@ -63,9 +65,8 @@ open class TranslationConfiguration(open var name: String = "default") {
         }
     }
     open var keyTransformer: Closure<CharSequence>? = null
-
     override fun toString(): String {
-        return "TranslationConfiguration(name='$name', apiKey=$apiKey, fileName='$fileName', sourceRoot='$sourceRoot', defaultLanguage=$defaultLanguage, fileType='$fileType', sourceRootProvider=$sourceRootProvider, languageRename=$languageRename, fileNameProvider=$fileNameProvider, folderProvider=$folderProvider, languageFilter=$languageFilter, keyTransformer=$keyTransformer)"
+        return "TranslationConfiguration(name='$name', apiKey=$apiKey, projectKey=$projectKey, projectToken=$projectToken, fileName='$fileName', sourceRoot='$sourceRoot', defaultLanguage=$defaultLanguage, fileType='$fileType', sourceRootProvider=$sourceRootProvider, languageRename=$languageRename, fileNameProvider=$fileNameProvider, folderProvider=$folderProvider, languageFilter=$languageFilter, keyTransformer=$keyTransformer)"
     }
 
 }
