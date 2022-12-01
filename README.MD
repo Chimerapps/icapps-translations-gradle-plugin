@@ -1,6 +1,6 @@
 # icapps-translations android gradle plugin
 
-[ ![Download](https://api.bintray.com/packages/nicolaverbeeck/maven/icapps-translations-gradle-plugin/images/download.svg) ](https://bintray.com/nicolaverbeeck/maven/icapps-translations-gradle-plugin/_latestVersion)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.chimerapps.gradle/icapps-translations-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.chimerapps.gradle/icapps-translations-plugin)
 
 A simple plugin which downloads translations from icapps translation tool and saves the files to the project.
 
