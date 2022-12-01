@@ -48,7 +48,7 @@ open class UpdateTranslationsTask : DefaultTask() {
             throw IllegalArgumentException("apiKey cannot be provided if projectKey or projectToken is set")
         }
 
-        TranslationDownloader(createApi(configuration), logger).download(configuration)
+        TranslationDownloader(createApi(configuration), logger).download(configuration, project)
     }
 
     private fun createApi(configuration: TranslationConfiguration): TranslationsAPI {

@@ -22,6 +22,7 @@ import com.chimerapps.gradle.icapps_translations.icapps_translations.api.Transla
 import groovy.lang.Closure
 import groovy.xml.DOMBuilder
 import okhttp3.internal.closeQuietly
+import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
@@ -41,7 +42,7 @@ import javax.xml.transform.stream.StreamResult
  */
 class TranslationDownloader(private val translationsAPI: TranslationsAPI, private val logger: Logger) {
 
-    fun download(configuration: TranslationConfiguration) {
+    fun download(configuration: TranslationConfiguration, project: Project) {
 
         logger.debug("Downloading translations for project ($configuration)")
 
@@ -63,7 +64,10 @@ class TranslationDownloader(private val translationsAPI: TranslationsAPI, privat
         projectLanguages.filter { languageFilter.call(it.languageCode ?: it.alternativeLanguageCode) }.forEach {
 
             val folderName = folderProvider.call(it.languageCode ?: it.alternativeLanguageCode)
-            val dir = File(sourceRootProvider.call(it.languageCode ?: it.alternativeLanguageCode), folderName)
+            var dir = File(sourceRootProvider.call(it.languageCode ?: it.alternativeLanguageCode), folderName)
+            if (!dir.isAbsolute)
+                dir = File(project.projectDir, dir.path)
+
             dir.mkdirs()
             val targetFile = File(dir, fileNameProvider.call(it.languageCode ?: it.alternativeLanguageCode))
 
